@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset=UTF-8>
+  <title>Flask RAG Service</title>
+</head>
+<body>
+<h2>Retrieval Augmented Generation</h2>
+Load documents, which are pre-processed in the background then made available for augmented Generative AI chat.
+
+<hr>
+<button id="login-button">Login</button>
+<button id="signup-button">Sign Up</button>
+<div id="login-div" style="display: none;">
+  <h4>Login</h4>
+  <form id=login method=post action="{{ url_for("auth.login") }}">
+    <label>Username: <input type=text name=username required></label><br>
+    <label>Password: <input type=password name=password required></label><br>
+    <input type=submit>
+  </form>
+  <p id="login-message" style="color: red; display: none;">Invalid username or password</p>
+</div>
+<div id="signup-div" style="display: none;">
+  <h4>Sign Up</h4>
+  <form id=signup method=post action="{{ url_for("auth.users.create") }}">
+    <label>Username: <input type=text name=username minlength=5 required></label><br>
+    <label>Password: <input type=password name=password minlength=10 required></label><br>
+    <input type=submit>
+  </form>
+</div>
+
+<script>
+  // Button elements
+  const signUp = document.getElementById("#signup");
+  const logIn = document.getElementById("#login");
+  // Signup button handler
+  document.getElementById("#signup-button").addEventListener("click", () => {
+    signUp.style.display = "block";
+  });
+  // Signup button handler
+  document.getElementById("#login-button").addEventListener("click", () => {
+    logIn.style.display = "block";
+  });
+  // Signup form handler
+  document.forms['signup'].addEventListener("submit", (event) => {
+    event.preventDefault()
+    fetch(event.target.action, {
+      method: "POST",
+      body: new FormData(event.target)
+    })
+    .then(response => {
+      // Show login form after signup
+      signUp.style.display = "none";
+      logIn.style.display = "block";
+    })
+  });
+  // Login form handler
+  document.forms['login'].addEventListener("submit", (event) => {
+    event.preventDefault()
+    fetch(event.target.action, {
+      method: "POST",
+      body: new FormData(event.target)
+    })
+    .then(response => {
+      const data = response.json();
+      if (response.ok) {
+        // Redirect to index page
+        window.location.href = "/";
+      } else {
+        // Update and show error message
+        const loginMessage = document.getElementById("#login-message");
+        loginMessage.innerText = data.message;
+        loginMessage.style.display = "block";
+      }
+    })
+  });
+</script>
+</body>
+</html>

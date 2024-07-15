@@ -1,0 +1,68 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  # Formatting, linting, security checks
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Run pre-commit
+        run: |
+          pre-commit run --all-files --verbose --show-diff-on-failure
+
+  test:
+    needs: pre-commit
+    runs-on: ubuntu-latest
+    container: python:3.12-bullseye
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Run tests
+        run: |
+          poetry run pytest -vv --cov=flask_rag_service/ --log-cli-level=INFO
