@@ -31,10 +31,10 @@ SWAGGER_CONFIG = {
             "route": '/apispec_1.json',
             "rule_filter": lambda rule: rule.rule.startswith('/auth') or rule.rule.startswith('/api'),
             "model_filter": lambda tag: True,
-        }
+        },
     ],
     "static_url_path": "/flasgger_static",
     # "static_folder": "static",  # must be set by user
     "swagger_ui": True,
-    "specs_route": "/apidocs/"
+    "specs_route": "/apidocs/",
 }

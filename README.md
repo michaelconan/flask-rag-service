@@ -18,4 +18,4 @@ Web application and REST API Retrieval Augmented Generation microservice with di
 ## Build and Test
 
 Run pre-commit hooks for formatting:
-`poetry run pre-commit --all-files --verbose --show-diff-on-failure`
+`poetry run pre-commit run --all-files --verbose --show-diff-on-failure`

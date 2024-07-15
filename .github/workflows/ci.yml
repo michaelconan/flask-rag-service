@@ -21,7 +21,7 @@ jobs:
 
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files --verbose --show-diff-on-failure
+          poetry run pre-commit run --all-files --verbose --show-diff-on-failure
 
   test:
     needs: pre-commit
